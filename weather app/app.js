@@ -2,16 +2,16 @@ const cityName = document.getElementById('myInput');
 const getWeather = document.getElementById('findBtn');
 const weatherCard = document.querySelector('.container');
 const loading = document.querySelector('.loading');
-const apiKey = "833d8ee015e2192ec2ed139eed9283ef";
+const apiKey = "833d8ee015e2192ec2ed139eed9283ef"; // Replace with your API key
 
 getWeather.addEventListener('click', async event => {
     event.preventDefault();
   
-    let City = cityName.value;
-    if(City) {
+    let city = cityName.value;
+    if (city) {
         loading.style.display = "block";
         try {
-            const weatherData = await getWeatherData(City);
+            const weatherData = await getWeatherData(city);
             displayWeatherData(weatherData);
         } catch (error) {
             console.error(error);
@@ -19,25 +19,26 @@ getWeather.addEventListener('click', async event => {
         } finally {
             loading.style.display = "none";
         }
-    }
-    else {
+    } else {
         displayError("Please enter a city!");
     }
 });
 
 async function getWeatherData(city) {
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
-    const response = await fetch(apiUrl);
-    if(!response.ok) {
-        throw new Error("Could not fetch weather data!");
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error("Could not fetch weather data!");
+        }
+        return response.json();
+    } catch (error) {
+        throw new Error("Error fetching weather data: " + error.message);
     }
-    return response.json();
 }
 
 function displayWeatherData(data) {
-    const {name: city,
-           main: {temp, humidity},
-           weather: [{id, description}]} = data;
+    const { name: city, main: { temp, humidity }, weather: [{ id, description }] } = data;
     
     weatherCard.textContent = "";
     weatherCard.style.display = "flex";
@@ -67,28 +68,21 @@ function displayWeatherData(data) {
 }
 
 function getWeatherEmoji(weatherId) {
-    if(weatherId >= 200 && weatherId < 300) {
+    if (weatherId >= 200 && weatherId < 300) {
         return "🌩️";
-    }
-    else if(weatherId >= 300 && weatherId < 400) {
+    } else if (weatherId >= 300 && weatherId < 400) {
         return "🌧️";
-    }
-    else if(weatherId >= 400 && weatherId < 600) {
+    } else if (weatherId >= 400 && weatherId < 600) {
         return "🌧️";
-    }
-    else if(weatherId >= 600 && weatherId < 700) {
+    } else if (weatherId >= 600 && weatherId < 700) {
         return "❄️";
-    }
-    else if(weatherId >= 700 && weatherId < 800) {
+    } else if (weatherId >= 700 && weatherId < 800) {
         return "🌫️";
-    }
-    else if(weatherId === 800) {
+    } else if (weatherId === 800) {
         return "🌞";
-    }
-    else if(weatherId >= 801 && weatherId < 810) {
+    } else if (weatherId >= 801 && weatherId < 810) {
         return "☁️";
-    }
-    else {
+    } else {
         return "???";
     }
 }
